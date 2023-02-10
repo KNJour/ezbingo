@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
-from mysqlconnection import connectToMySQL
 from user import User
+from mysqlconnection import connectToMySQL
 from flask_bcrypt import  Bcrypt;
 import re
 from flask_app import app
@@ -18,10 +18,12 @@ PMT_REGEX = re.compile(r"^\d*[.,]?\d*$")
 
 @app.route('/')
 def index():
-    
+    userlist = connectToMySQL('ezbingo').query_db("SELECT * FROM users")
+    print(userlist)
+    print("xxxxx")
     users = User.all_users()
     print(users)
-    return render_template("index.html", users=users)  
+    return render_template("index.html", allusers = userlist, users=users)  
 
 # REGISTRATION PAGE AND REGISTRATION SUBMIT
 @app.route('/register')
@@ -31,25 +33,18 @@ def register():
 @app.route('/submit', methods=['POST'])
 def submit():
     session.clear()
-    print("ENTERED SUBMIT ROUTE")
     is_valid = True
-
-    print(request.form['email'])
-    print(request.form['first_name'])
-    print(request.form['last_name'])
-    print(request.form['username'])
-    print(request.form['password'])
     userquery = "SELECT * FROM users"
-    existingUsers = connectToMySQL("ezbingo").query_db(userquery)
-    for one in existingUsers: #   EMAIL VALIDATION
-        if one['email'] == request.form['email'].lower():
+    user_list = connectToMySQL("ezbingo").query_db(userquery)
+    for one in user_list: #   EMAIL VALIDATION
+        if one['email'] == request.form['email']:
             is_valid = False
             flash("email is already taken", "email")
     if not EMAIL_REGEX.match(request.form['email']):
         is_valid = False
         flash("Invalid email address!")
-    for one in existingUsers: #   USERNAME VALIDATION
-        if one['username'] == request.form['username'].lower():
+    for one in user_list: #   USERNAME VALIDATION
+        if one['username'] == request.form['username']:
             is_valid = False
             flash("that username is already taken", "username")
     if len(request.form['first_name']) < 2: # NAME VALIDATION
@@ -72,12 +67,15 @@ def submit():
         flash("Passwords DO NOT Match")
     print(is_valid)
     if not is_valid:
-        return redirect ('/register')
+        return redirect ('/')
     
     else:
         flash("Registration Successful!", "register")
         hashedPass = bcrypt.generate_password_hash(request.form['password'])
+
+        query = "INSERT INTO users (first_name, last_name, user_name, email, password, created_at, updated_at) VALUES (%(first_name)s,%(last_name)s, %(username)s, %(email)s, %(password)s,NOW(),NOW());"
         
+        print(query)
         data = {
             'first_name' : request.form['first_name'],
             'last_name' : request.form['last_name'],
@@ -85,8 +83,7 @@ def submit():
             'password' : hashedPass,
             'username': request.form['username'].lower(),
             }
-        query = "INSERT INTO users (first_name, last_name, username, email, password, created_at, updated_at) VALUES (%(first_name)s,%(last_name)s, %(username)s, %(email)s, %(password)s,NOW(),NOW());"
-        users = connectToMySQL("ezbingo").query_db(query, data)
+        users = connectToMySQL("budgets").query_db(query, data)
         print(users)
         
         return redirect ('/')

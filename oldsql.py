@@ -1,5 +1,4 @@
 import pymysql.cursors
-
 class MySQLConnection:
     def __init__(self, db):
         connection = pymysql.connect(host = 'localhost',
@@ -15,8 +14,7 @@ class MySQLConnection:
             try:
                 query = cursor.mogrify(query, data)
                 print("Running Query:", query)
-     
-                cursor.execute(query, data)
+                executable = cursor.execute(query, data)
                 if query.lower().find("insert") >= 0:
                     self.connection.commit()
                     return cursor.lastrowid
