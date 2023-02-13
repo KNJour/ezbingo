@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">  
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@200&family=IBM+Plex+Sans+Arabic:wght@100;300;400;600&family=Roboto:wght@100;300;400;500;900&family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>EZ Bingo Dashboard</title>
+</head>
+<body id="index-body">
+    <nav class="navbar navbar-expand-md nav-style">
+        <a class="navbar-brand" href="/dashboard"><img class="nav-logo"src="../static/img/logo.png"  alt="EZBingo"></a>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active m-2">
+              <a href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item m-2"><a href="/playlistgenerator">Create Playlist</a></li>
+          </ul>
+        </div>
+        <a class="btn btn-dark btn-outline-dark text-light my-2 my-sm-0" href="/logout" type="submit"><strong><span class="hover">Log</span><span style="color:red">out</span></strong></a>
+      </nav>
+      <div class="bg"></div>
+    <div class="container-fluid dashboard-container">
+      <div class="row">
+        <div class="col text-center">
+          <h2>Welcome {{username}}!</h2>
+        </div>
+      </div>
+        <div class="row">
+            <div class="col-6 text-center">
+                <a href="/playlistgenerator"><h3 class="text-center">Create a Playlist</h3></a>
+            </div>
+            <div class="col-6 text-center">
+                <h3 class="text-center">Generate Cards</h3>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col text-center">
+            <h3>Your Playlists</h3>
+            <table>
+              
+            </table>
+          </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col">
+              <ul class="nav justify-content-center">
+                <li class="nav-item">
+                  <a class="nav-link" target="_blank" href="/">See the Code</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Eat a banana</a></li>
+                <li class="nav-item">
+                  <a class="nav-link" target="_blank" href="www.keithjournell.com">A Website by Keith Journell</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+    </div>
+          
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+      crossorigin="anonymous"></script>
+</body>
+</html>

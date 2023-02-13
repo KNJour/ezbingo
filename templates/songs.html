@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">  
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@200&family=IBM+Plex+Sans+Arabic:wght@100;300;400;600&family=Roboto:wght@100;300;400;500;900&family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>Edit Songs</title>
+</head>
+<body id="index-body">
+    <nav class="navbar navbar-expand-md nav-style">
+        <a class="navbar-brand" href="/dashboard"><img class="nav-logo"src="../static/img/logo.png"  alt="EZBingo"></a>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/playlistgenerator">Back to Playlists</a></li>
+          </ul>
+        </div>
+        <a class="btn btn-dark btn-outline-dark text-light my-2 my-sm-0" href="/logout" type="submit"><strong><span class="hover">Log</span><span style="color:red">out</span></strong></a>
+      </nav>
+      
+    <div class="container-fluid dashboard-container">
+      <div class="row">
+        <div class="col text-center">
+            <h2>Here you can Edit songs for the {{playlist['playlist_name']}} playlist. </h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}   
+                    {% for message in messages %}
+                        <p class="text-danger">{{message}}</p>       
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+      </div>
+        <div class="row">
+          <div class="col-6 d-flex justify-content-center">
+            <div class="card">
+              <div class="card-body bg-dark text-light">
+              <h4 class="card-title">Song:</h4>
+                  <form action="/create_song" method="post">
+                    <div class="form-group form-inline">
+                      <label for="title" class="m-2">Song Title</label>
+                      <input type="text" name="title" id="title" class="form-control">
+                    </div>
+                    <div class="form-group form-inline">
+                      <label for="artist" class="m-2">Artist</label>
+                      <input type="text" name="artist" id="artist" class="form-control">
+                    </div>
+                      <input type="hidden" name="playlist_id" value="{{playlist['id']}}"> 
+                      <input type="submit" value="Add Song" class="btn makeGreen btn-outline-dark">
+                  </form>
+              </div>
+          </div>
+          </div>
+            <div class="col-6 justify-content-center text-center">
+              <h3>Current Songs</h3>
+              <table class="table table-striped table-hover">
+                <head class="thead-dark">
+                    <tr>
+                        <th>Song TitleName:</th>
+                        <th>Artist</th>
+                        <th>Delete</th>
+                    </tr>
+                </head>
+                <tbody>
+                    {%for song in currentsongs%}
+                    <tr>
+                        <td>{{song['title']}}</td>
+                        <td>{{song['artist']}}</td>
+                        <form action="/delete_song" method="post">
+                            <td>
+                                <input type="hidden" name="song_id" value="{{song['id']}}">
+                                <input type="hidden" name="playlist_id" value="{{playlist_id}}">
+                                <input type="submit" value="delete" class="btn btn-dark text-warning">
+                            </td>
+                        </form>
+                    </tr>   
+                    {%endfor%}
+                </tbody>
+            </table> 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+              <ul class="nav justify-content-center">
+                <li class="nav-item">
+                  <a class="nav-link" target="_blank" href="https://github.com/KNJour/budgetpal">See the Code</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Eat a banana</a></li>
+                <li class="nav-item">
+                  <a class="nav-link" target="_blank" href="www.keithjournell.com">A Website by Keith Journell</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+    </div>
+          
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+      crossorigin="anonymous"></script>
+</body>
+</html>

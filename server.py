@@ -91,5 +91,176 @@ def submit():
         
         return redirect ('/')
 
+
+# VALIDATIONS & LOGIN ----------------------------------
+# Validation for Login User
+@app.route('/login', methods=['POST'])
+def login():
+    data = {
+        'username' : request.form['username'].lower()
+    }
+    hashedpassword = request.form['password']
+    print(request.form['username'].lower())
+    print(hashedpassword)
+    # FIRST, checks to see if field put in 'username' login box is an email or not. if it does not match email regex it queries users. if it does it queries emails. 
+    if not EMAIL_REGEX.match(request.form['username']):
+        print('KNOWS IT ISNT EMAIL')
+        userquery = "SELECT * FROM users WHERE username = %(username)s"
+        user = connectToMySQL("ezbingo").query_db(userquery, data)
+
+        if len(user) < 1:
+            flash("no username or email found", "login")
+            return redirect('/')
+        if user:
+            if bcrypt.check_password_hash(user[0]["password"], hashedpassword): #stores info in session
+                session['first_name'] = user[0]["first_name"]
+                session['last_name'] = user[0]["last_name"]
+                session['username'] = user[0]["username"]
+                session['user_id'] = user[0]["id"]
+                session['email'] = user[0]['email']
+                return redirect('/dashboard')
+            else:
+                print ("THE ELSE PASSWORD BAD")
+                flash("password is incorrect", "login")
+                return redirect('/')
+    else: 
+        emailquery = "SELECT * FROM users WHERE email = %(username)s"
+        user = connectToMySQL("ezbingo").query_db(emailquery, data)
+        if len(user) < 1:
+            flash("no username or email found", "login")
+            return redirect('/')
+        if bcrypt.check_password_hash(user[0]["password"], hashedpassword):
+            session['first_name'] = user[0]["first_name"]
+            session['last_name'] = user[0]["last_name"]
+            session['username'] = user[0]["username"]
+            session['user_id'] = user[0]["id"]
+            session['email'] = user[0]['email']
+            return redirect('/dashboard')
+        else:
+            print ("THE ELSE")
+            flash("password is incorrect", "login")
+            return redirect('/')
+        
+
+# LOGOUT - CLEARS SESSION AND LOGS OUT TO INDEX
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
+# DASHBOARD ------------------------------------------
+@app.route('/dashboard')
+def dashboard():
+    if 'user_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+
+    data = {
+        "user_id": session['user_id'],
+    }
+
+    playlist_query = "SELECT * FROM playlists WHERE user_id = %(user_id)s;"
+    playlists = connectToMySQL('ezbingo').query_db(playlist_query, data)
+    username = session['username']
+    print(username)
+    return render_template("dashboard.html", playlists=playlists, username = username)
+
+# CREATING & EDITING PLAYLISTS ----------------------------------
+@app.route('/playlistgenerator')
+def playlistgenerator():
+    if 'user_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+    data = {
+        "user_id": session['user_id']
+    }
+    playlist_query = "SELECT * FROM playlists WHERE user_id = %(user_id)s;"
+    playlists = connectToMySQL('ezbingo').query_db(playlist_query, data)
+
+    return render_template("playlistgenerator.html", playlists = playlists, username = session['username'])
+
+@app.route('/submit_playlist', methods=['POST'])
+def submit_playlist():
+    if 'user_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+    data = {
+        "name" : request.form['playlist_name'],
+        "user_id" : session['user_id']
+    }
+    query = "INSERT INTO playlists (user_id, playlist_name, created_at, updated_at) VALUES (%(user_id)s, %(name)s, NOW(),NOW())"
+    newPlaylist = connectToMySQL('ezbingo').query_db(query,data)
+
+    flash("playlist successfully created!")
+    return redirect ('/playlistgenerator')
+
+# CREATING AND DELETING SONGS
+@app.route('/songs/<int:playlist_id>')
+def songs(playlist_id):
+    if 'user_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+    
+    if playlist_id:
+        print("ADDING PLAYLIST ID FROM REQUEST-FORM TO SESSION")
+        session['playlist_id'] = playlist_id
+    # if request.form['playlist_name']:
+    #     print("ADDING PLAYLIST NAME FROM REQUEST-FORM TO SESSION")
+    #     session['playlist_name'] = request.form['playlist_name']
+
+
+    data = {
+        "user_id" : session['user_id'],
+        "playlist_id" : playlist_id
+    }
+
+    songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
+    currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
+    playlistQuery = 'SELECT * FROM playlists WHERE id = %(playlist_id)s'
+    playlist = connectToMySQL('ezbingo').query_db(playlistQuery,data)
+    print("IIIDDDDD")
+    print(playlist)
+    return render_template('songs.html', currentsongs = currentsongs, playlist=playlist)
+
+@app.route('/create_song/', methods=['POST'])
+def create_song():
+    if 'user_id' not in session or 'playlist_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+
+    data = {
+        "title" : request.form['title'],
+        "artist" : request.form['artist'],
+        "playlist_id" : request.form['playlist_id'],
+        "user_id" : session['user_id']
+    }
+    query = "INSERT INTO songs (playlist_id, title, artist, created_at, updated_at) VALUES (%(playlist_id)s, %(title)s, %(artist)s, NOW(),NOW())"
+    addSong = connectToMySQL('ezbingo').query_db(query,data)
+    id = request.form['playlist_id']
+    flash("song successfully created!")
+    return redirect (f'/songs/{id}')
+
+@app.route('/delete_song', methods=['POST'])
+def delete_song():
+    data = {
+        'song_id': request.form['song_id'],
+        'user_id' : session['user_id']
+    }
+    query = "DELETE FROM songs WHERE id = %(song_id)s;"
+    delete_song = connectToMySQL('ezbingo').query_db(query,data)
+    print(session['playlist_id'])
+    return redirect ('/songs')
+
+# DELETE PLAYLISTS & SONGS ---------------------------------------------
+@app.route('/delete_playlist', methods=['POST'])
+def delete_playlist():
+    query = "DELETE FROM playlists WHERE id = %(playlist_id)s;"
+    data = {
+        'playlist_id': request.form['playlist_id'],
+        'user_id' : session['user_id']
+    }
+    
+    delete_playlist = connectToMySQL('ezbingo').query_db(query,data)
+    return redirect('/playlistgenerator')
+
 if __name__== "__main__":
     app.run(debug=True)

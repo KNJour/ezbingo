@@ -1,0 +1,47 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Anek Latin', sans-serif;
+}
+
+body, html {
+    height: 100%;
+    background-color:#b3e3a0;
+}
+
+/* NAVBAR */
+
+.nav-logo {
+    max-width: 100px;
+}
+
+.nav-style {
+    background-color: 	#fdf1d5;
+}
+
+/* UTILITY, BACKGROUND, REUSABLE CLASSES */
+.makeGreen {
+    background-color: #b3e3a0;
+}
+
+.bg {
+    background-image: url(../img/logo.png);
+  
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 80%;
+    height: 40%;
+    z-index:0;
+    margin-top:20px;
+}
+
+/* INDEX STYLING */
+.index-link {
+    width: 70px;
+    height: 70px;
+    padding: 10px 16px;
+    border-radius: 35px;
+    text-align: center;
+    background-color: #fdf1d5;
+}
