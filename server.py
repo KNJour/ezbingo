@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, redirect, session, flash
+from flask import Flask, render_template, request, redirect, session, flash, Response, make_response, send_file
 from mysqlconnection import connectToMySQL
 from user import User
+import random
 from flask_bcrypt import  Bcrypt;
 import re
+import pdfkit
 from flask_app import app
+# Importing reportlab library for pdf generation
 
 
 app = Flask(__name__)
@@ -165,81 +168,83 @@ def dashboard():
     return render_template("dashboard.html", playlists=playlists, username = username)
 
 # CREATING & EDITING PLAYLISTS ----------------------------------
-@app.route('/playlistgenerator')
-def playlistgenerator():
+@app.route('/playlists')
+def playlists():
     if 'user_id' not in session:
         print("NOT IN SESSION")
-        return redirect('/')
+        return redirect('/logout')
     data = {
         "user_id": session['user_id']
     }
     playlist_query = "SELECT * FROM playlists WHERE user_id = %(user_id)s;"
     playlists = connectToMySQL('ezbingo').query_db(playlist_query, data)
 
-    return render_template("playlistgenerator.html", playlists = playlists, username = session['username'])
+    return render_template("playlists.html", playlists = playlists, username = session['username'])
 
-@app.route('/submit_playlist', methods=['POST'])
+@app.route('/submit_playlist', methods=['GET', 'POST'])
 def submit_playlist():
     if 'user_id' not in session:
         print("NOT IN SESSION")
         return redirect('/')
-    data = {
-        "name" : request.form['playlist_name'],
-        "user_id" : session['user_id']
-    }
-    query = "INSERT INTO playlists (user_id, playlist_name, created_at, updated_at) VALUES (%(user_id)s, %(name)s, NOW(),NOW())"
-    newPlaylist = connectToMySQL('ezbingo').query_db(query,data)
+    if request.method == 'POST':
+        data = {
+            "name" : request.form['playlist_name'],
+            "user_id" : session['user_id']
+        }
+        query = "INSERT INTO playlists (user_id, playlist_name, created_at, updated_at) VALUES (%(user_id)s, %(name)s, NOW(),NOW())"
+        newPlaylist = connectToMySQL('ezbingo').query_db(query,data)
 
-    flash("playlist successfully created!")
-    return redirect ('/playlistgenerator')
+        flash("playlist successfully created!")
+        return redirect ('/playlists')
 
 # CREATING AND DELETING SONGS
-@app.route('/songs/<int:playlist_id>')
-def songs(playlist_id):
+@app.route('/songs', methods=['POST', 'GET'])
+def songs():
     if 'user_id' not in session:
         print("NOT IN SESSION")
         return redirect('/')
-    
-    if playlist_id:
-        print("ADDING PLAYLIST ID FROM REQUEST-FORM TO SESSION")
-        session['playlist_id'] = playlist_id
-    # if request.form['playlist_name']:
-    #     print("ADDING PLAYLIST NAME FROM REQUEST-FORM TO SESSION")
-    #     session['playlist_name'] = request.form['playlist_name']
+    if request.method == 'POST':
+        if request.form['playlist_id']:
+            print("ADDING PLAYLIST ID FROM REQUEST-FORM TO SESSION")
+            session['playlist_id'] = request.form['playlist_id']
+            session['playlist_name'] = request.form['playlist_name']
 
+        data = {
+            "user_id" : session['user_id'],
+            "playlist_id" : request.form['playlist_id']
+        }
 
-    data = {
-        "user_id" : session['user_id'],
-        "playlist_id" : playlist_id
-    }
-
-    songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
-    currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
-    playlistQuery = 'SELECT * FROM playlists WHERE id = %(playlist_id)s'
-    playlist = connectToMySQL('ezbingo').query_db(playlistQuery,data)
-    print("IIIDDDDD")
-    print(playlist)
-    return render_template('songs.html', currentsongs = currentsongs, playlist=playlist)
+        songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
+        currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
+        return render_template('songs.html', currentsongs = currentsongs, playlist_name = request.form['playlist_name'], playlist_id = request.form['playlist_id'])
+    if request.method == 'GET':
+        print('ITS THE GET METHOD')
+        data = {
+            "user_id" : session['user_id'],
+            "playlist_id" : session['playlist_id']
+        }
+        songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
+        currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
+        return render_template('songs.html', currentsongs = currentsongs, playlist_name = session['playlist_name'], playlist_id = session['playlist_id'])
 
 @app.route('/create_song/', methods=['POST'])
 def create_song():
     if 'user_id' not in session or 'playlist_id' not in session:
         print("NOT IN SESSION")
-        return redirect('/')
+        return redirect('/logout')
 
     data = {
         "title" : request.form['title'],
         "artist" : request.form['artist'],
-        "playlist_id" : request.form['playlist_id'],
+        "playlist_id" : session['playlist_id'],
         "user_id" : session['user_id']
     }
     query = "INSERT INTO songs (playlist_id, title, artist, created_at, updated_at) VALUES (%(playlist_id)s, %(title)s, %(artist)s, NOW(),NOW())"
     addSong = connectToMySQL('ezbingo').query_db(query,data)
-    id = request.form['playlist_id']
     flash("song successfully created!")
-    return redirect (f'/songs/{id}')
+    return redirect ('/songs')
 
-@app.route('/delete_song', methods=['POST'])
+@app.route('/delete_song', methods=['GET', 'POST'])
 def delete_song():
     data = {
         'song_id': request.form['song_id'],
@@ -251,7 +256,7 @@ def delete_song():
     return redirect ('/songs')
 
 # DELETE PLAYLISTS & SONGS ---------------------------------------------
-@app.route('/delete_playlist', methods=['POST'])
+@app.route('/delete_playlist', methods=['GET', 'POST'])
 def delete_playlist():
     query = "DELETE FROM playlists WHERE id = %(playlist_id)s;"
     data = {
@@ -260,7 +265,66 @@ def delete_playlist():
     }
     
     delete_playlist = connectToMySQL('ezbingo').query_db(query,data)
-    return redirect('/playlistgenerator')
+    return redirect('/playlists')
+
+# Page to create cards
+@app.route('/card_settings', methods=['POST'])
+def card_settings():
+    session['playlist_id'] = request.form['playlist_id']
+    session['playlist_name'] = request.form['playlist_name']
+
+    # songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
+    # currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
+    return render_template('/card_settings.html')
+
+@app.route('/create_cards', methods=['POST'])
+def create_cards():
+    data = {
+            "user_id" : session['user_id'],
+            "playlist_id" : session['playlist_id']
+        }
+    query = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
+    songs = connectToMySQL('ezbingo').query_db(query,data)
+    playlist = []
+    for song in songs:
+        full_song = str(song['title'])
+        if song['artist']:
+            full_song = str(f'{full_song} ({song["artist"]})')
+        playlist.append(full_song)
+    # Gather desired settings from form
+    print(playlist)
+    # checks if there are enough songs (not using grid size initially) 
+    # songs_required = (grid_size * grid_size) - 1
+    cards_per_page = int(request.form['cards_per_page'])
+    num_cards = int(request.form['num_cards'])
+    # if len(playlist) < songs_required:
+    #     return "Error: Playlist does not have enough unique elements to create the bingo card."
+    
+    options = {
+    'page-size': 'Letter',
+    'orientation': 'Landscape'
+    }
+    playlist_name = session['playlist_name']
+    cards = randomize_cards(playlist, num_cards)
+    rendered = render_template('template.html', cards=cards, playlist_name=playlist_name)
+    pdf = pdfkit.from_string(rendered, False, options=options)
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+    return response
+
+
+# grabs 24 songs from playlist (only 24 due to free space) for cards
+def randomize_cards(playlist, num_cards):
+    cards = []
+    for _ in range(num_cards):
+        songs = playlist.copy()  # create a copy of the playlist for each card desired
+        random.shuffle(songs)  # Shuffles, duh
+        cards.append(songs[:24])  # take first 24 songs for the bingo card
+    return cards
+
+
+
 
 if __name__== "__main__":
     app.run(debug=True)

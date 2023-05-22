@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Options</title>
+</head>
+<body>
+    <form action="/create_cards" method="POST">
+        <label for="free_space">Include free space?:</label>
+        <input type="checkbox" name="free_space" id="free_space"><br><br>
+        
+        <label for="grid_size">Grid size:</label>
+        <select name="grid_size" id="grid_size">
+            <option value="3">3x3</option>
+            <option value="4">4x4</option>
+            <option value="5">5x5</option>
+        </select><br><br>
+        
+        <label for="num_cards">Number of cards:</label>
+        <input type="number" name="num_cards" id="num_cards" min="1" max="500" value="100"><br><br>
+        
+        <label for="cards_per_page">Cards per page:</label>
+        <select name="cards_per_page" id="cards_per_page">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+        </select><br><br>
+        
+        <input type="submit" value="Generate Bingo Cards">
+    </form>
+
+    <form action="/generate_bingo_cards" method="POST">
+        <input type="submit" value="TEST GENERATION">
+    </form>
+</body>
+</html>

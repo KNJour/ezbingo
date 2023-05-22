@@ -33,7 +33,7 @@
       </div>
         <div class="row">
             <div class="col-6 text-center">
-                <a href="/playlistgenerator"><h3 class="text-center">Create a Playlist</h3></a>
+                <a href="/playlists"><h3 class="text-center">Create a Playlist</h3></a>
             </div>
             <div class="col-6 text-center">
                 <h3 class="text-center">Generate Cards</h3>
@@ -42,9 +42,37 @@
         <div class="row">
           <div class="col text-center">
             <h3>Your Playlists</h3>
-            <table>
-              
-            </table>
+            <table class="table table-striped table-hover">
+              <thead class="thead-dark">
+                  <tr>
+                      <th>Playlist Name</th>
+                      <th>Add/Remove Songs</th>
+                      <th>Generate Playlist</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for playlist in playlists %}
+                  <tr>
+                      <td>{{ playlist['playlist_name'] }}</td>
+                      <td>
+                          <form action="/songs" method="POST">
+                              <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                              <input type="hidden" name="playlist_name" value="{{ playlist['playlist_name'] }}">
+                              <input type="submit" value="Edit Songs" class="btn btn-primary text-dark">
+                          </form>
+                      </td>
+                      <td>
+                        <form action="/card_settings" method="POST">
+                          <input type="hidden" name="playlist_id" value="{{ playlist['id'] }}">
+                          <input type="hidden" name="playlist_name" value="{{ playlist['playlist_name'] }}">
+                          <input type="submit" value="Generate Cards" class="btn btn-primary text-dark">
+                      </form>
+                      </td>
+                  </tr>   
+                  {% endfor %}
+              </tbody>
+          </table>
+          
           </div>
             </div>
 

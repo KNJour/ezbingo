@@ -28,7 +28,7 @@
     <div class="container-fluid dashboard-container">
       <div class="row">
         <div class="col text-center">
-            <h2>Here you can Edit songs for the {{playlist['playlist_name']}} playlist. </h2>
+            <h2>Here you can Edit songs for the {{playlist_name}} playlist. </h2>
             {% with messages = get_flashed_messages() %}
                 {% if messages %}   
                     {% for message in messages %}
@@ -52,7 +52,7 @@
                       <label for="artist" class="m-2">Artist</label>
                       <input type="text" name="artist" id="artist" class="form-control">
                     </div>
-                      <input type="hidden" name="playlist_id" value="{{playlist['id']}}"> 
+                      <input type="hidden" name="playlist_id" value="{{playlist_id}}"> 
                       <input type="submit" value="Add Song" class="btn makeGreen btn-outline-dark">
                   </form>
               </div>
