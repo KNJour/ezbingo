@@ -45,3 +45,8 @@ body, html {
     text-align: center;
     background-color: #fdf1d5;
 }
+
+/* SPOTIFY LIST PAGE */
+.spotify_list {
+    width: 500px;
+}

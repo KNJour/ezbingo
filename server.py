@@ -6,6 +6,7 @@ from flask_bcrypt import  Bcrypt;
 import re
 import pdfkit
 from flask_app import app
+import spot
 # Importing reportlab library for pdf generation
 
 
@@ -324,7 +325,20 @@ def randomize_cards(playlist, num_cards):
     return cards
 
 
+#  Spotify generation route start
+@app.route('/spotify')
+def spotify():
+    if 'user_id' not in session:
+        print("NOT IN SESSION")
+        return redirect('/')
+    return render_template('/spotify_template.html')
 
+@app.route('/create_spotify_playlist', methods=['POST'])
+def create_spotify_playlist():
 
+    url_list = request.form['list'].split()
+    spot.convert_to_playlist(url_list, session['user_id'], request.form['playlist_name'])
+    print(spot.__name__)
+    return redirect('/dashboard')
 if __name__== "__main__":
     app.run(debug=True)

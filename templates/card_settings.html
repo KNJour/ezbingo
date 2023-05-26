@@ -1,38 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@200&family=IBM+Plex+Sans+Arabic:wght@100;300;400;600&family=Roboto:wght@100;300;400;500;900&family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Your Options</title>
 </head>
 <body>
-    <form action="/create_cards" method="POST">
-        <label for="free_space">Include free space?:</label>
-        <input type="checkbox" name="free_space" id="free_space"><br><br>
-        
-        <label for="grid_size">Grid size:</label>
-        <select name="grid_size" id="grid_size">
-            <option value="3">3x3</option>
-            <option value="4">4x4</option>
-            <option value="5">5x5</option>
-        </select><br><br>
-        
-        <label for="num_cards">Number of cards:</label>
-        <input type="number" name="num_cards" id="num_cards" min="1" max="500" value="100"><br><br>
-        
-        <label for="cards_per_page">Cards per page:</label>
-        <select name="cards_per_page" id="cards_per_page">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="4">4</option>
-        </select><br><br>
-        
-        <input type="submit" value="Generate Bingo Cards">
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <div class="card mt-5 bg-dark text-light">
+                    <form action="/create_cards" method="POST" class="p-1 m-2">
+                        <label for="free_space">Include free space?: (disabled, always has free space)</label>
+                        <input type="checkbox" name="free_space" id="free_space"><br><br>
+                        
+                        <label for="grid_size">Grid size: (disabled)</label>
+                        <select name="grid_size" id="grid_size">
+                            <option value="3">3x3</option>
+                            <option value="4">4x4</option>
+                            <option value="5">5x5</option>
+                        </select><br><br>
+                        
+                        <label for="num_cards">Number of cards:</label>
+                        <input type="number" name="num_cards" id="num_cards" min="1" max="500" value="100"><br><br>
+                        
+                        <label for="cards_per_page">Cards per page: (disabled)</label>
+                        <select name="cards_per_page" id="cards_per_page">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="4">4</option>
+                        </select><br><br>
+                        
+                        <input type="submit" value="Generate Bingo Cards">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <form action="/generate_bingo_cards" method="POST">
-        <input type="submit" value="TEST GENERATION">
-    </form>
 </body>
 </html>

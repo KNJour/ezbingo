@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@200&family=IBM+Plex+Sans+Arabic:wght@100;300;400;600&family=Roboto:wght@100;300;400;500;900&family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Playlist Converter</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Spotify Playlist Generator</h1>
+                <h4>Step 1: Navigate To Your Spotify Playlist</h4>
+                <h4>Step 2: Hit Control + A For Windows or Command + A on Mac to select all songs</h4>
+                <h4>Step 3: Hit Control + C For Windows or Command + C on Mac to Copy all songs</h4>
+                <h4>Step 4: In the Text Box Below, Paste your playlist. It should look like a series of web addresses</h4>
+                <h4>Step 5: Add a Name to your Playlist</h4>
+                <br>
+                <h3>Hit Convert and enjoy your new music bingo playlist!</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col d-flex justify-content-center">
+                <div class="card mt-5 bg-dark text-light spotify_list">
+                    <form action="/create_spotify_playlist" method="POST" class="p-1 m-2 justify-content-center">
+                        <div class="form-group ">
+                            <label for="list">Paste your Spotify Playlist Below</label>
+                            <textarea class="form-control" name="list" id="list" rows="20"></textarea>
+                        </div>
+                        <div class="form-group ">
+                            <label for="playlist_name">Playlist Name:</label>
+                            <input type="text" name="playlist_name" id="list">
+                        </div>
+                        <input class="btn btn-success text-dark mx-auto"type="submit" value="CONVERT">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
