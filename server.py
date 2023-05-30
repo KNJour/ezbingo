@@ -227,7 +227,7 @@ def songs():
         songQuery = "SELECT * FROM songs WHERE playlist_id = %(playlist_id)s;"
         currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
         return render_template('songs.html', currentsongs = currentsongs, playlist_name = session['playlist_name'], playlist_id = session['playlist_id'])
-
+# Create a new Song
 @app.route('/create_song/', methods=['POST'])
 def create_song():
     if 'user_id' not in session or 'playlist_id' not in session:
@@ -256,16 +256,43 @@ def delete_song():
     print(session['playlist_id'])
     return redirect ('/songs')
 
+# UPDATE A SONG
+@app.route('/update_song', methods=['POST'])
+def update_song():
+    data = {
+        'song_id' : request.form['song_id'],
+        'artist' : request.form['artist'],
+        'title' : request.form['title']
+    }
+    if not request.form['title']:
+        flash("All songs must have a title")
+        return redirect ('/songs')
+    elif request.form['artist']:
+        query = "UPDATE songs SET title = %(title)s, artist = %(artist)s WHERE id = %(song_id)s;"
+        update_song = connectToMySQL('ezbingo').query_db(query,data)
+        flash("Song Title and Artist Updated")
+        return redirect ('/songs')
+    else: 
+        query = "UPDATE songs SET title = %(title)s WHERE id = %(song_id)s;"
+        update_song = connectToMySQL('ezbingo').query_db(query,data)
+        flash("Song Title Updated")
+        return redirect ('/songs')
+
+    # query = "UPDATE songs SET title = %(title)s, artist = %(artist)s WHERE id = 24;"
+    # update_song = connectToMySQL('ezbingo').query_db(query,data)
+    flash("song updated")
+    return redirect ('/songs')
 # DELETE PLAYLISTS & SONGS ---------------------------------------------
 @app.route('/delete_playlist', methods=['GET', 'POST'])
 def delete_playlist():
-    query = "DELETE FROM playlists WHERE id = %(playlist_id)s;"
+    song_query = "DELETE FROM songs WHERE playlist_id = %(playlist_id)s;"
+    playlist_query = "DELETE FROM playlists WHERE id = %(playlist_id)s;"
     data = {
         'playlist_id': request.form['playlist_id'],
         'user_id' : session['user_id']
     }
-    
-    delete_playlist = connectToMySQL('ezbingo').query_db(query,data)
+    delete_songs = connectToMySQL('ezbingo').query_db(song_query,data)
+    delete_playlist = connectToMySQL('ezbingo').query_db(playlist_query,data)
     return redirect('/playlists')
 
 # Page to create cards

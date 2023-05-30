@@ -38,8 +38,8 @@
             {% endwith %}
         </div>
       </div>
-        <div class="row">
-            <div class="col text-center">
+        <div class="row ">
+            <div class="col text-center d-flex justify-content-center">
                 <div class="card w-50">
                     <div class="card-body bg-dark text-light">
                     <h4 class="card-title">Playlist Name</h4>
@@ -75,7 +75,6 @@
                                 <input type="submit" value="Edit Songs" class="btn btn-primary text-dark">
                             </td>
                         </form>
-                        <td><h3><a href="songs/{{playlist['id']}}">test</a></h3></td>
                         <form action="/delete_playlist" method="post">
                             <td>
                                 <input type="hidden" name="playlist_id" value="{{playlist['id']}}">

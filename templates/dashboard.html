@@ -19,10 +19,10 @@
             <li class="nav-item active m-2">
               <a href="/dashboard">Dashboard</a>
             </li>
-            <li class="nav-item m-2"><a href="/playlistgenerator">Create Playlist</a></li>
+            <li class="nav-item m-2"><a href="/playlists">Create Playlist</a></li>
           </ul>
         </div>
-        <a class="btn btn-dark btn-outline-dark text-light my-2 my-sm-0" href="/logout" type="submit"><strong><span class="hover">Log</span><span style="color:red">out</span></strong></a>
+        <a class="btn btn-dark btn-outline-dark text-light my-2 my-sm-0" href="/logout" type="submit"><strong>LOG OUT</strong></a>
       </nav>
       <div class="bg"></div>
     <div class="container-fluid dashboard-container">
@@ -32,11 +32,15 @@
         </div>
       </div>
         <div class="row">
-            <div class="col-6 text-center">
-                <a href="/playlists"><h3 class="text-center">Create a Playlist</h3></a>
+            <div class="col-6 d-flex justify-content-center">
+              <div class="img-wrapper">
+                <a href="/playlists"><img src="../static/img/playlist_link.png" class="img-thumbnail"></a>
+              </div>
             </div>
-            <div class="col-6 text-center">
-              <a href="/spotify"><h3 class="text-center">Convert Spotify Playlist</h3></a>
+            <div class="col-6 d-flex justify-content-center">
+              <div class="img-wrapper">
+                <a href="/spotify"><img src="../static/img/spotify_link.png" class="img-fluid img-thumbnail rounded"></a>
+              </div>
             </div>
         </div>
         <div class="row">

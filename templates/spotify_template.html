@@ -13,6 +13,18 @@
     <title>Spotify Playlist Converter</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-md nav-style">
+        <a class="navbar-brand" href="/dashboard"><img class="nav-logo"src="../static/img/logo.png"  alt="EZBingo"></a>
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active m-2">
+              <a href="/dashboard">Dashboard</a>
+            </li>
+            <li class="nav-item m-2"><a href="/playlists">Create Playlist</a></li>
+          </ul>
+        </div>
+        <a class="btn btn-dark btn-outline-dark text-light my-2 my-sm-0" href="/logout" type="submit"><strong>LOG OUT</strong></a>
+      </nav>
     <div class="container">
         <div class="row">
             <div class="col">
@@ -23,7 +35,7 @@
                 <h4>Step 4: In the Text Box Below, Paste your playlist. It should look like a series of web addresses</h4>
                 <h4>Step 5: Add a Name to your Playlist</h4>
                 <br>
-                <h3>Hit Convert and enjoy your new music bingo playlist!</h3>
+                <h3>Hit Convert and enjoy your new music bingo playlist! (May Take A Second)</h3>
             </div>
         </div>
         <div class="row">
@@ -32,11 +44,11 @@
                     <form action="/create_spotify_playlist" method="POST" class="p-1 m-2 justify-content-center">
                         <div class="form-group ">
                             <label for="list">Paste your Spotify Playlist Below</label>
-                            <textarea class="form-control" name="list" id="list" rows="20"></textarea>
+                            <textarea class="form-control" name="list" id="list" rows="25" required></textarea>
                         </div>
                         <div class="form-group ">
                             <label for="playlist_name">Playlist Name:</label>
-                            <input type="text" name="playlist_name" id="list">
+                            <input type="text" name="playlist_name" id="list" required>
                         </div>
                         <input class="btn btn-success text-dark mx-auto"type="submit" value="CONVERT">
                     </form>

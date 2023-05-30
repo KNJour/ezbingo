@@ -24,10 +24,32 @@ def get_access_token(client_id, client_secret):
 def get_track_info(track_id, access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
     track_url = f"https://api.spotify.com/v1/tracks/{track_id}"
-    track_response = requests.get(track_url, headers=headers)
-    track_data = track_response.json()
-    track_title = track_data["name"]
-    artist_name = track_data["artists"][0]["name"]
+    try:
+        track_response = requests.get(track_url, headers=headers)
+        track_response.raise_for_status() # Raises a HTTPError if the response status is not 200
+        track_data = track_response.json()
+        # Checks to insure data is actually there, if not creates placeholder so it can be found
+        if not track_data["name"]:
+            track_title = "NO TRACK NAME LISTED"
+            print("NO NAME FOUND")
+        else: track_title = track_data["name"]
+        if not track_data["artists"][0]["name"]:
+            artist_name = None
+            print("NO ARTIST FOUND")
+        else:
+            artist_name = track_data["artists"][0]["name"]
+        # if data is too long to enter (greater than 45 char), shorten it
+        if len(track_title) > 45:
+            track_title = track_title[:42] + '...'
+        if len(artist_name) > 45:
+            track_title = track_title[:42] + '...'
+
+    except (requests.exceptions.HTTPError, KeyError) as e:
+        print(f"Error occurred: {e}")
+        track_title = "NOT FOUND"
+        artist_name = "NOT FOUND"
+    
+    print(f"TITLE: {track_title} --- ARTIST: {artist_name}")
     return track_title, artist_name
 
 access_token = get_access_token(client_id, client_secret)
@@ -43,15 +65,10 @@ def convert_to_playlist(url_list, user_id, playlist_name):
         # Retrieves the ID of the playlist created to insert songs into from the list of url's
     playlist_id_query = "SELECT id FROM Playlists WHERE playlists.user_id = %(user_id)s ORDER BY id DESC LIMIT 1"
     playlist_id = connectToMySQL('ezbingo').query_db(playlist_id_query, playlist_data)
-    print(playlist_id)
-    # Loops through list of addresses, 
-    # print("test type:")
-    # print(playlist_id)
-    # print(type(playlist_id[0]['id']))
+    # Loops through list of addresses, grabs title and artist and adds them to songs to the above created playlist
     for url in url_list:
         track_id = url.split('/')[-1]
         song_title, artist_name = get_track_info(track_id, access_token)
-        print(type(song_title))
         data = {
             "title" : song_title,
             "artist" : artist_name,

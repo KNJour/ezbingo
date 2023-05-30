@@ -50,3 +50,12 @@ body, html {
 .spotify_list {
     width: 500px;
 }
+
+.message-success {
+    font-weight: bold;
+    color:darkorange;
+}
+
+.img-wrapper {
+    max-width: 350px;
+}
