@@ -37,12 +37,6 @@ def submit():
     session.clear()
     print("ENTERED SUBMIT ROUTE")
     is_valid = True
-
-    print(request.form['email'])
-    print(request.form['first_name'])
-    print(request.form['last_name'])
-    print(request.form['username'])
-    print(request.form['password'])
     userquery = "SELECT * FROM users"
     existingUsers = connectToMySQL("ezbingo").query_db(userquery)
     for one in existingUsers: #   EMAIL VALIDATION
@@ -91,7 +85,6 @@ def submit():
             }
         query = "INSERT INTO users (first_name, last_name, username, email, password, created_at, updated_at) VALUES (%(first_name)s,%(last_name)s, %(username)s, %(email)s, %(password)s,NOW(),NOW());"
         users = connectToMySQL("ezbingo").query_db(query, data)
-        print(users)
         
         return redirect ('/')
 
@@ -104,11 +97,9 @@ def login():
         'username' : request.form['username'].lower()
     }
     hashedpassword = request.form['password']
-    print(request.form['username'].lower())
-    print(hashedpassword)
-    # FIRST, checks to see if field put in 'username' login box is an email or not. if it does not match email regex it queries users. if it does it queries emails. 
+    #  checks to see if field put in 'username' login box is an email or not. if it does not match email regex it queries users. if it does it queries emails. 
     if not EMAIL_REGEX.match(request.form['username']):
-        print('KNOWS IT ISNT EMAIL')
+
         userquery = "SELECT * FROM users WHERE username = %(username)s"
         user = connectToMySQL("ezbingo").query_db(userquery, data)
 
@@ -165,7 +156,7 @@ def dashboard():
     playlist_query = "SELECT * FROM playlists WHERE user_id = %(user_id)s;"
     playlists = connectToMySQL('ezbingo').query_db(playlist_query, data)
     username = session['username']
-    print(username)
+
     return render_template("dashboard.html", playlists=playlists, username = username)
 
 # CREATING & EDITING PLAYLISTS ----------------------------------
@@ -206,7 +197,6 @@ def songs():
         return redirect('/')
     if request.method == 'POST':
         if request.form['playlist_id']:
-            print("ADDING PLAYLIST ID FROM REQUEST-FORM TO SESSION")
             session['playlist_id'] = request.form['playlist_id']
             session['playlist_name'] = request.form['playlist_name']
 
@@ -219,7 +209,6 @@ def songs():
         currentsongs = connectToMySQL('ezbingo').query_db(songQuery,data)
         return render_template('songs.html', currentsongs = currentsongs, playlist_name = request.form['playlist_name'], playlist_id = request.form['playlist_id'])
     if request.method == 'GET':
-        print('ITS THE GET METHOD')
         data = {
             "user_id" : session['user_id'],
             "playlist_id" : session['playlist_id']
@@ -253,7 +242,6 @@ def delete_song():
     }
     query = "DELETE FROM songs WHERE id = %(song_id)s;"
     delete_song = connectToMySQL('ezbingo').query_db(query,data)
-    print(session['playlist_id'])
     return redirect ('/songs')
 
 # UPDATE A SONG
@@ -365,7 +353,6 @@ def create_spotify_playlist():
 
     url_list = request.form['list'].split()
     spot.convert_to_playlist(url_list, session['user_id'], request.form['playlist_name'])
-    print(spot.__name__)
     return redirect('/dashboard')
 if __name__== "__main__":
     app.run(debug=True)
